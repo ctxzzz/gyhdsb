@@ -1,22 +1,3 @@
-## gyhdsb-robot
-
-[![Version](https://img.shields.io/npm/v/vue.svg?sanitize=true)](./LICENSE)
-[![API reference](https://img.shields.io/docsrs/auto-launch/latest)](https://dev.qweather.com/docs/)
-[![License](https://img.shields.io/npm/l/vue.svg?sanitize=true)](./LICENSE)
-
-## Installation
-> `npm install --save gyhdsb-robot`
-
-## Summary
-微信推送天气机器人 (https://github.com/ctxzzz/gyhdsb).
-
-## Details
-Files were exported from https://github.com/ctxzzz/gyhdsb.
-## [example.js](https://github.com/ctxzzz/gyhdsb/blob/main/example.js)
-
-## Usage
-
-```js
 const GYHDSB = require('gyhdsb-robot');
 
 const gyhdsb_robot = new GYHDSB({
@@ -56,7 +37,4 @@ ${lunarData.today}
   // gyhdsb_robot.run();
   // 测试立即执行使用
   gyhdsb_robot.test();
-
 });
-
-```

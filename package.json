@@ -1,0 +1,23 @@
+{
+  "name": "gyhdsb-robot",
+  "version": "1.0.11",
+  "author": "chennan",
+  "description": "每日推送天气消息的微信机器人",
+  "license": "MIT",
+  "keywords": [
+    "wechat-robot",
+    "weather",
+    "gyhdsb"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ctxzzz/gyhdsb.git"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "gyhdsb-robot": "^1.0.7",
+    "lunar-calendar": "^0.1.4",
+    "node-cron": "^3.0.3"
+  }
+}
