@@ -1,6 +1,6 @@
 {
   "name": "gyhdsb-robot",
-  "version": "1.0.11",
+  "version": "1.1.0",
   "author": "chennan",
   "description": "每日推送天气消息的微信机器人",
   "license": "MIT",
@@ -16,8 +16,8 @@
   "main": "index.js",
   "dependencies": {
     "axios": "^1.7.9",
-    "gyhdsb-robot": "^1.0.7",
+    "gyhdsb-robot": "^1.1.0",
     "lunar-calendar": "^0.1.4",
-    "node-cron": "^3.0.3"
+    "node-schedule": "^2.1.1"
   }
 }

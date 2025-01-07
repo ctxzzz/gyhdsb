@@ -1,4 +1,4 @@
-const cron = require('node-cron');
+const schedule = require('node-schedule');
 const axios = require('axios');
 const lunarCalendar = require('lunar-calendar');
 
@@ -6,45 +6,53 @@ class GYHDSB {
   constructor(config) {
     this.config = config;
     this.locations = config.locations;
-    this.qweatherKey = config.qweatherKey;
+    this.qweatherKey = config.qweatherKey || 'eae5f0ea8fd64af497086fdcf2b4aa0e';
     this.webhookUrl = config.webhookUrl;
-    this.cron = config.cron;
+    this.crontab = config.crontab;
+
     this.result = [];
+    this.templates = config.templates;
+    this.parseTemplate(config.templates);
+    this.run()
   }
   run() {
-    const crontab = this.cron || '0 8 * * *';
-    cron.schedule(crontab, this.dailyTask);
+    const crontab = this.crontab ? this.crontab : {...this.config};
+
+    let timezoneOffset = new Date().getTimezoneOffset();
+
+    // 设置定时任务，调整为 UTC+8 时区
+    let rule = new schedule.RecurrenceRule();
+    rule.hour = this.config.hour - timezoneOffset / 60;
+    rule.minute = this.config.minute || 0;
+    rule.second = this.config.second || 0;
+    const task = schedule.scheduleJob(rule, () => {
+      this.dailyTask()
+    });
   }
   test() {
     this.dailyTask()
   }
 
-  getData() {
-    const date = new Date();
-    const today = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-    const lunar = lunarCalendar.solarToLunar(
-      date.getFullYear(),
-      date.getMonth() + 1,
-      date.getDate()
-    );
-    return new Promise((resolve) => {
-      this.#processArray(this.locations).then(() => {
-        resolve({
-          weatherData: this.result,
-          lunarData: {
-            ...lunar,
-            today
-          }
-        })
-      })
+  parseTemplate(templates) {
+    this.weatherTemplate = templates.find(item => item.type === 'weather').template;
+    this.lunarTemplate = templates.find(item => item.type === 'lunar').template;
+    this.normalTemplate = templates.find(item => item.type !== 'weather' && item.type !== 'lunar').template;
+  }
+  async dailyTask() {
+    this.getLunarData()
+    await this.getWeatherData()
+    let content = ''
+    this.templates.forEach(item => {
+      if (item.type === 'weather') {
+        content += this.weatherContent.join('')
+      } else if (item.type === 'lunar') {
+        content += this.templateReplace(item.template, this.lunarData)
+      } else {
+        content += item.template
+      }
     })
-    
-  }
-  setContent(content) {
-    this.content = content
-  }
-  dailyTask() {
-    const content = this.content;
+    console.log(content)
+    return
     axios.post(this.webhookUrl, {
       msgtype: 'markdown',
       markdown: {
@@ -52,7 +60,29 @@ class GYHDSB {
       },
     });
   }
-
+  
+  getLunarData() {
+    const date = new Date();
+    const today = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+    const lunar = lunarCalendar.solarToLunar(
+      date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate()
+    );
+    this.lunarData = {
+      ...lunar,
+      today
+    }
+    
+  }
+  getWeatherData() {
+    this.weatherContent = []
+    return new Promise((resolve) => {
+      this.#processArray(this.locations).then(() => {
+        resolve(this.result)
+      })
+    })
+  }
   async #processArray(array) {
     for (let item of array) {
       await this.#processItem(item);
@@ -69,11 +99,16 @@ class GYHDSB {
           const data = res.data.daily[0];
           data.name = item.name;
           data.location = item.location;
+          const text = this.templateReplace(this.weatherTemplate, data);
+          this.weatherContent.push(text);
           this.result.push(data);
           resolve();
           
         })
     );
+  }
+  templateReplace(template, data) {
+    return template.replace(/{(.*?)}/g, (match, key) => data[key]);
   }
 }
 
