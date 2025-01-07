@@ -22,8 +22,8 @@ const gyhdsb_robot = new GYHDSB({
     location: '101190401',
     name: '苏州',
   }],
-  hour: 15,
-  minute: 6,
+  hour: 8,
+  minute: 0,
   templates: [
   {
     template: `Dear all😘`,

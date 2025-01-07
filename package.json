@@ -16,7 +16,7 @@
   "main": "index.js",
   "dependencies": {
     "axios": "^1.7.9",
-    "gyhdsb-robot": "^1.1.0",
+    "gyhdsb-robot": "latest",
     "lunar-calendar": "^0.1.4",
     "node-schedule": "^2.1.1"
   }

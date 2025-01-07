@@ -1,0 +1,23 @@
+# 忽略所有日志文件
+*.log
+
+# 忽略所有的pid文件
+*.pid
+
+# 忽略所有的备份文件
+*.bak
+
+# 忽略所有的临时文件
+*.tmp
+
+# 忽略所有的DS_Store文件（Mac系统下的文件夹属性文件）
+.DS_Store
+
+# 忽略所有的node_modules文件夹（Node.js项目的依赖文件夹）
+node_modules/
+
+# 忽略所有的dist文件夹（编译后的文件）
+dist/
+
+# 忽略所有的build文件夹（编译后的文件）
+build/

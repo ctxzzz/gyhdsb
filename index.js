@@ -16,15 +16,11 @@ class GYHDSB {
     this.run()
   }
   run() {
-    const crontab = this.crontab ? this.crontab : {...this.config};
-
-    let timezoneOffset = new Date().getTimezoneOffset();
-
-    // 设置定时任务，调整为 UTC+8 时区
     let rule = new schedule.RecurrenceRule();
-    rule.hour = this.config.hour - timezoneOffset / 60;
+    rule.hour = this.config.hour;
     rule.minute = this.config.minute || 0;
     rule.second = this.config.second || 0;
+    rule.tz = 'Asia/Shanghai'
     const task = schedule.scheduleJob(rule, () => {
       this.dailyTask()
     });
@@ -51,8 +47,6 @@ class GYHDSB {
         content += item.template
       }
     })
-    console.log(content)
-    return
     axios.post(this.webhookUrl, {
       msgtype: 'markdown',
       markdown: {
