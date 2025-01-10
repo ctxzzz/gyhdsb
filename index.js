@@ -25,7 +25,11 @@ class GYHDSB {
       this.dailyTask()
     });
   }
-  test() {
+  async test() {
+    const content = await this.getContent();
+    console.log(content, this.result)
+  }
+  send() {
     this.dailyTask()
   }
 
@@ -34,7 +38,7 @@ class GYHDSB {
     this.lunarTemplate = templates.find(item => item.type === 'lunar').template;
     this.normalTemplate = templates.find(item => item.type !== 'weather' && item.type !== 'lunar').template;
   }
-  async dailyTask() {
+  async getContent() {
     this.getLunarData()
     await this.getWeatherData()
     let content = ''
@@ -47,6 +51,10 @@ class GYHDSB {
         content += item.template
       }
     })
+    return content;
+  }
+  async dailyTask() {
+    const content = await this.getContent();
     axios.post(this.webhookUrl, {
       msgtype: 'markdown',
       markdown: {
@@ -91,6 +99,16 @@ class GYHDSB {
         )
         .then((res) => {
           const data = res.data.daily[0];
+          data.visCN = getVisCN(data.vis);
+          const [windScaleDayMinCN, windScaleDayCN] = getWindScaleCN(data.windScaleDay);
+          const [windScaleNightMinCN, windScaleNightCN] = getWindScaleCN(data.windScaleDay);
+
+          data.windScaleDayMinCN = windScaleDayMinCN;
+          data.windScaleDayCN = windScaleDayCN;
+
+          data.windScaleNightMinCN = windScaleNightMinCN;
+          data.windScaleNightCN = windScaleNightCN;
+
           data.name = item.name;
           data.location = item.location;
           const text = this.templateReplace(this.weatherTemplate, data);
@@ -104,6 +122,59 @@ class GYHDSB {
   templateReplace(template, data) {
     return template.replace(/{(.*?)}/g, (match, key) => data[key]);
   }
+}
+
+
+
+function getVisCN(vis) {
+  let description;
+  if (vis > 10) {
+    description = '极佳';
+  } else if (vis > 4) {
+    description = '较好';
+  } else if (vis > 2) {
+    description = '良好';
+  } else if (vis > 1) {
+    description = '轻雾';
+  } else if (vis > 0.5) {
+    description = '雾天';
+  } else if (vis > 0.2) {
+    description = '大雾';
+  } else if (vis > 0.05) {
+    description = '浓雾';
+  } else {
+    description = '强浓雾';
+  }
+
+  return description;
+}
+
+function getWindScaleCN(windScale) {
+  const [min, max] = windScale.split('-');
+  const windScaleCN = {
+    0: '无风',
+    1: '软风',
+    2: '轻风',
+    3: '微风',
+    4: '和风',
+    5: '清风',
+    6: '强风',
+    7: '疾风',
+    8: '大风',
+    9: '烈风',
+    10: '狂风',
+    11: '暴风',
+    12: '飓风',
+    13: '台风',
+    14: '强台风',
+    15: '强台风',
+    16: '超强台风',
+    17: '超强台风'
+  }
+  const minCN = windScaleCN[min];
+  const maxCN = windScaleCN[max] || '超强台风';
+
+  return[minCN, maxCN];
 }
 
 module.exports = GYHDSB;

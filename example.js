@@ -43,4 +43,4 @@ const gyhdsb_robot = new GYHDSB({
 });
 
 
-// gyhdsb_robot.test() // 测试立即执行使用
+gyhdsb_robot.test() // 测试立即执行使用

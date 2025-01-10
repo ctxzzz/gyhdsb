@@ -1,6 +1,6 @@
 {
   "name": "gyhdsb-robot",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "author": "chennan",
   "description": "每日推送天气消息的微信机器人",
   "license": "MIT",
